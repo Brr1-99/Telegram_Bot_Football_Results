@@ -8,4 +8,4 @@ Telegram bot supported by requests calls to an API.
 
 Telegram bot that uses a request call to API-FOOTBALL in order to obtain the stands of the main european national competitions.
 
-![showcase](showcase.png)
+![showcase](showcase.PNG)
