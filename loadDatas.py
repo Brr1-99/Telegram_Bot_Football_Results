@@ -1,7 +1,6 @@
 import requests, os
 from datetime import date
 from dotenv import load_dotenv
-from interfaces import buildLeague, buildTeam
 
 today = date.today()
 
@@ -11,32 +10,28 @@ load_dotenv()
 
 league_url = f"https://api-football-v1.p.rapidapi.com/v3/standings"
 
-
 headers = {
 	"X-RapidAPI-Key": os.getenv("API_KEY"),
 	"X-RapidAPI-Host": "api-football-v1.p.rapidapi.com"
 }
 
 # Function to call the league API endpoint 
-# It extracts and transforms the information to a custom interface
-def loadData(league: int) -> dict:
+# It first extracts and transforms the information 
+# Into a message response for the Telegram Bot
+def loadData(league: int) -> str:
+    message = ""
 
     querystring = {"season":f"{season}","league": f"{league}"}
 
     response = requests.request("GET", league_url, headers=headers, params=querystring).json()
 
-    league = response['response'][0]['league']
+    league_info = response['response'][0]['league']
 
-    stands = league['standings'][0]
+    message += f"Standings for '{league_info['name']}' {league_info['season']}\n"
 
-    teams = []
+    stands = league_info['standings'][0]
 
     for team in stands:
-        teams.append(buildTeam(
-        name= team["team"]["name"],
-        rank= team["rank"],
-        points= team["points"],
-        ))
+        message += f"{team['rank']}. -> {team['team']['name']} : {team['points']} points\n"
 
-    league = buildLeague(league['name'], league['season'], teams)
-    return league 
+    return message 
